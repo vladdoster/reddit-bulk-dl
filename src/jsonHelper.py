@@ -5,7 +5,7 @@ from src.errors import InvalidJSONFile
 
 
 class JsonFile:
-    """ Write and read JSON files
+    """Write and read JSON files
     Use add(self,toBeAdded) to add to files
     Use delete(self,*deletedKeys) to delete keys
     """
@@ -19,7 +19,7 @@ class JsonFile:
 
     def read(self):
         try:
-            with open(self.file_dir, 'r') as f:
+            with open(self.file_dir, "r") as f:
                 return json.load(f)
         except json.decoder.JSONDecodeError:
             raise InvalidJSONFile(f"{self.file_dir} cannot be read")
@@ -53,5 +53,5 @@ class JsonFile:
     def __writeToFile(self, content, create=False):
         if not create:
             remove(self.file_dir)
-        with open(self.file_dir, 'w') as f:
+        with open(self.file_dir, "w") as f:
             json.dump(content, f, indent=4)

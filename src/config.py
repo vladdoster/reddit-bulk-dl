@@ -1,10 +1,9 @@
-from src.reddit import Reddit
 from src.jsonHelper import JsonFile
+from src.reddit import Reddit
 from src.utils import nameCorrector
 
 
 class Config:
-
     def __init__(self, filename):
         self.filename = filename
         self.file = JsonFile(self.filename)
@@ -17,7 +16,8 @@ class Config:
         return self.file.read()
 
     def setCustomFileName(self):
-        print("""
+        print(
+            """
 IMPORTANT: Do not change the filename structure frequently.
            If you did, the program could not find duplicates and
            would download the already downloaded files again.
@@ -31,7 +31,11 @@ The text in curly braces will be replaced with the corresponding property of an 
 
 For example: {FLAIR}_{SUBREDDIT}_{REDDITOR}
 
-Existing filename template:""", None if "filename" not in self.file.read() else self.file.read()["filename"])
+Existing filename template:""",
+            None
+            if "filename" not in self.file.read()
+            else self.file.read()["filename"],
+        )
 
         filename = nameCorrector(input(">> ").upper())
         self.file.add({"filename": filename})
@@ -47,7 +51,8 @@ Existing filename template:""", None if "filename" not in self.file.read() else 
             self.file.add({"filename": content["filename"] + "_{POSTID}"})
 
     def setCustomFolderPath(self):
-        print("""
+        print(
+            """
 Type a folder structure (generic folder path)
 
 Use slash or DOUBLE backslash to separate folders
@@ -57,7 +62,11 @@ The text in curly braces will be replaced with the corresponding property of an 
 
 For example: {REDDITOR}/{SUBREDDIT}/{FLAIR}
 
-Existing folder structure""", None if "folderpath" not in self.file.read() else self.file.read()["folderpath"])
+Existing folder structure""",
+            None
+            if "folderpath" not in self.file.read()
+            else self.file.read()["folderpath"],
+        )
 
         folderpath = nameCorrector(input(">> ").strip("\\").strip("/").upper())
 
@@ -69,12 +78,16 @@ Existing folder structure""", None if "folderpath" not in self.file.read() else 
             self.file.add({"folderpath": "{SUBREDDIT}"})
 
     def setDefaultOptions(self):
-        print("""
+        print(
+            """
 Type options to be used everytime script runs
 
 For example: --no-dupes --quit --limit 100 --skip youtube.com
 
-Existing default options:""", None if "options" not in self.file.read() else self.file.read()["options"])
+Existing default options:""",
+            None if "options" not in self.file.read() else self.file.read()[
+                "options"],
+        )
 
         options = input(">> ").strip("")
 
@@ -100,10 +113,16 @@ Existing default options:""", None if "options" not in self.file.read() else sel
         print()
 
     def setDefaultDirectory(self):
-        print("""Set a default directory to use in case no directory is given
+        print(
+            """Set a default directory to use in case no directory is given
 Leave blank to reset it. You can use {time} in foler names to use to timestamp it
 For example: D:/archive/BDFR_{time}
-""")
-        print("Current default directory:", self.file.read()[
-              "default_directory"] if "default_directory" in self.file.read() else "")
+"""
+        )
+        print(
+            "Current default directory:",
+            self.file.read()["default_directory"]
+            if "default_directory" in self.file.read()
+            else "",
+        )
         self.file.add({"default_directory": input(">> ")})

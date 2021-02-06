@@ -8,8 +8,9 @@ from src.jsonHelper import JsonFile
 
 class GLOBAL:
     """Declare global variables"""
+
     RUN_TIME = ""
-    config = {'imgur_client_id': None, 'imgur_client_secret': None}
+    config = {"imgur_client_id": None, "imgur_client_secret": None}
     arguments = None
     directory = None
     defaultConfigDirectory = Path.home() / "Bulk Downloader for Reddit"
@@ -31,7 +32,7 @@ def createLogFile(title):
     """
     folder_directory = GLOBAL.directory / "LOG_FILES" / GLOBAL.RUN_TIME
 
-    log_filename = title.upper() + '.json'
+    log_filename = title.upper() + ".json"
 
     if not path.exists(folder_directory):
         makedirs(folder_directory)
@@ -47,7 +48,8 @@ def printToFile(*args, no_print=False, **kwargs):
     """Print to both CONSOLE and
     CONSOLE LOG file in a folder time stampt in the name
     """
-    folder_directory = GLOBAL.directory / Path("LOG_FILES") / Path(GLOBAL.RUN_TIME)
+    folder_directory = GLOBAL.directory / \
+        Path("LOG_FILES") / Path(GLOBAL.RUN_TIME)
 
     if not no_print or GLOBAL.arguments.verbose or "file" in kwargs:
         print(*args, **kwargs)
@@ -56,7 +58,9 @@ def printToFile(*args, no_print=False, **kwargs):
         makedirs(folder_directory)
 
     if "file" not in kwargs:
-        with io.open(folder_directory / "CONSOLE_LOG.txt", "a", encoding="utf-8") as FILE:
+        with io.open(
+            folder_directory / "CONSOLE_LOG.txt", "a", encoding="utf-8"
+        ) as FILE:
             print(*args, file=FILE, **kwargs)
 
 
@@ -76,14 +80,31 @@ def nameCorrector(string, reference=None):
 
     if total_lenght > limit:
         limit -= reference_length
-        string = string[:limit - 1]
+        string = string[: limit - 1]
 
     string = string.replace(" ", "_")
 
-    if len(string.split('\n')) > 1:
-        string = "".join(string.split('\n'))
+    if len(string.split("\n")) > 1:
+        string = "".join(string.split("\n"))
 
-    bad_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '#', '.', '@', '“', '’', '\'', '!']
+    bad_chars = [
+        "\\",
+        "/",
+        ":",
+        "*",
+        "?",
+        '"',
+        "<",
+        ">",
+        "|",
+        "#",
+        ".",
+        "@",
+        "“",
+        "’",
+        "'",
+        "!",
+    ]
     string = "".join([i if i not in bad_chars else "_" for i in string])
 
     return string

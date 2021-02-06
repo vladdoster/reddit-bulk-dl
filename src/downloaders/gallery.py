@@ -5,15 +5,15 @@ import urllib
 import requests
 
 from src.downloaders.downloaderUtils import getFile
-from src.errors import (AlbumNotDownloadedCompletely, FileAlreadyExistsError, ImageNotFound, NotADownloadableLinkError,
-                        TypeInSkip)
+from src.errors import (AlbumNotDownloadedCompletely, FileAlreadyExistsError,
+                        ImageNotFound, NotADownloadableLinkError, TypeInSkip)
 from src.utils import GLOBAL
 from src.utils import printToFile as print
 
 
 class Gallery:
     def __init__(self, directory, post):
-        link = post['CONTENTURL']
+        link = post["CONTENTURL"]
         self.raw_data = self.getData(link)
 
         self.directory = directory
@@ -21,12 +21,18 @@ class Gallery:
 
         images = {}
         count = 0
-        for model in self.raw_data['posts']['models']:
+        for model in self.raw_data["posts"]["models"]:
             try:
-                for item in self.raw_data['posts']['models'][model]['media']['gallery']['items']:
+                for item in self.raw_data["posts"]["models"][model]["media"]["gallery"][
+                    "items"
+                ]:
                     try:
-                        images[count] = {'id': item['mediaId'], 'url': self.raw_data['posts']
-                                         ['models'][model]['media']['mediaMetadata'][item['mediaId']]['s']['u']}
+                        images[count] = {
+                            "id": item["mediaId"],
+                            "url": self.raw_data["posts"]["models"][model]["media"][
+                                "mediaMetadata"
+                            ][item["mediaId"]]["s"]["u"],
+                        }
                         count += 1
                     except Exception:
                         continue
@@ -43,7 +49,8 @@ class Gallery:
         }
         res = requests.get(link, headers=headers)
         if res.status_code != 200:
-            raise ImageNotFound(f"Server responded with {res.status_code} to {link}")
+            raise ImageNotFound(
+                f"Server responded with {res.status_code} to {link}")
         page_source = res.text
 
         starting_string = "_r = {"
@@ -51,16 +58,19 @@ class Gallery:
 
         starting_string_lenght = len(starting_string)
         try:
-            start_index = page_source.index(starting_string) + starting_string_lenght
+            start_index = page_source.index(
+                starting_string) + starting_string_lenght
             end_index = page_source.index(ending_string, start_index)
         except ValueError:
-            raise NotADownloadableLinkError(f"Could not read the page source on {link}")
+            raise NotADownloadableLinkError(
+                f"Could not read the page source on {link}")
 
-        data = json.loads(page_source[start_index - 1:end_index + 1].strip()[:-1])
+        data = json.loads(
+            page_source[start_index - 1: end_index + 1].strip()[:-1])
         return data
 
     def downloadAlbum(self, images, count):
-        folder_name = GLOBAL.config['filename'].format(**self.post)
+        folder_name = GLOBAL.config["filename"].format(**self.post)
         folder_dir = self.directory / folder_name
 
         how_many_downloaded = 0
@@ -70,22 +80,24 @@ class Gallery:
             if not os.path.exists(folder_dir):
                 os.makedirs(folder_dir)
         except FileNotFoundError:
-            folder_dir = self.directory / self.post['POSTID']
+            folder_dir = self.directory / self.post["POSTID"]
             os.makedirs(folder_dir)
 
         print(folder_name)
 
         for i in range(count):
-            path = urllib.parse.urlparse(images[i]['url']).path
+            path = urllib.parse.urlparse(images[i]["url"]).path
             extension = os.path.splitext(path)[1]
 
-            filename = "_".join([str(i + 1), images[i]['id']]) + extension
-            short_filename = str(i + 1) + "_" + images[i]['id']
+            filename = "_".join([str(i + 1), images[i]["id"]]) + extension
+            short_filename = str(i + 1) + "_" + images[i]["id"]
 
             print("\n  ({}/{})".format(i + 1, count))
 
             try:
-                getFile(filename, short_filename, folder_dir, images[i]['url'], indent=2)
+                getFile(
+                    filename, short_filename, folder_dir, images[i]["url"], indent=2
+                )
                 how_many_downloaded += 1
                 print()
 
@@ -99,12 +111,18 @@ class Gallery:
 
             except Exception as exception:
                 print("\n  Could not get the file")
-                print("  " + "{class_name}: {info}\nSee CONSOLE_LOG.txt for more information".format(
-                    class_name=exception.__class__.__name__, info=str(exception)) + "\n"
+                print(
+                    "  "
+                    + "{class_name}: {info}\nSee CONSOLE_LOG.txt for more information".format(
+                        class_name=exception.__class__.__name__, info=str(
+                            exception)
+                    )
+                    + "\n"
                 )
                 print(GLOBAL.log_stream.getvalue(), no_print=True)
 
         if duplicates == count:
             raise FileAlreadyExistsError
         elif how_many_downloaded + duplicates < count:
-            raise AlbumNotDownloadedCompletely("Album Not Downloaded Completely")
+            raise AlbumNotDownloadedCompletely(
+                "Album Not Downloaded Completely")

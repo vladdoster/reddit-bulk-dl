@@ -6,11 +6,11 @@ from src.utils import GLOBAL
 
 class Direct:
     def __init__(self, directory, post):
-        post['EXTENSION'] = getExtension(post['CONTENTURL'])
+        post["EXTENSION"] = getExtension(post["CONTENTURL"])
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        filename = GLOBAL.config['filename'].format(**post) + post["EXTENSION"]
-        short_filename = post['POSTID'] + post['EXTENSION']
+        filename = GLOBAL.config["filename"].format(**post) + post["EXTENSION"]
+        short_filename = post["POSTID"] + post["EXTENSION"]
 
-        getFile(filename, short_filename, directory, post['CONTENTURL'])
+        getFile(filename, short_filename, directory, post["CONTENTURL"])

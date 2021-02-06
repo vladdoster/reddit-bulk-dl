@@ -39,8 +39,9 @@ def LinkParser(link):
         splitted_link = splitted_link[2:]
 
     try:
-        if (splitted_link[-2].endswith("reddit.com") and
-                splitted_link[-1] == "") or splitted_link[-1].endswith("reddit.com"):
+        if (
+            splitted_link[-2].endswith("reddit.com") and splitted_link[-1] == ""
+        ) or splitted_link[-1].endswith("reddit.com"):
 
             result["sort"] = "best"
             return result
@@ -59,11 +60,13 @@ def LinkParser(link):
         result = {"post": link}
         return result
 
-    elif "me" in splitted_link or \
-         "u" in splitted_link or \
-         "user" in splitted_link or \
-         "r" in splitted_link or \
-         "m" in splitted_link:
+    elif (
+        "me" in splitted_link
+        or "u" in splitted_link
+        or "user" in splitted_link
+        or "r" in splitted_link
+        or "m" in splitted_link
+    ):
 
         if "r" in splitted_link:
             result["subreddit"] = splitted_link[splitted_link.index("r") + 1]
@@ -81,9 +84,7 @@ def LinkParser(link):
                     result["user"] = "me"
 
     for index in range(len(splitted_link)):
-        if splitted_link[index] in [
-            "hot", "top", "new", "controversial", "rising"
-        ]:
+        if splitted_link[index] in ["hot", "top", "new", "controversial", "rising"]:
 
             result["sort"] = splitted_link[index]
 
@@ -106,8 +107,10 @@ def LinkParser(link):
                 del parsed_query["HEADER"]
                 result["search"] = parsed_query
 
-            elif parsed_query["HEADER"] == "submitted" or \
-                    parsed_query["HEADER"] == "posts":
+            elif (
+                parsed_query["HEADER"] == "submitted"
+                or parsed_query["HEADER"] == "posts"
+            ):
                 del parsed_query["HEADER"]
                 result["submitted"] = parsed_query
 
@@ -115,10 +118,15 @@ def LinkParser(link):
                 del parsed_query["HEADER"]
                 result["queries"] = parsed_query
 
-    if not ("upvoted" in result or
-            "saved" in result or
-            "submitted" in result or
-            "multireddit" in result) and "user" in result:
+    if (
+        not (
+            "upvoted" in result
+            or "saved" in result
+            or "submitted" in result
+            or "multireddit" in result
+        )
+        and "user" in result
+    ):
         result["submitted"] = {}
 
     return result
@@ -139,9 +147,11 @@ def LinkDesigner(link):
 
         if "restrict_sr" in attributes["search"]:
 
-            if not (attributes["search"]["restrict_sr"] == 0 or
-                    attributes["search"]["restrict_sr"] == "off" or
-                    attributes["search"]["restrict_sr"] == ""):
+            if not (
+                attributes["search"]["restrict_sr"] == 0
+                or attributes["search"]["restrict_sr"] == "off"
+                or attributes["search"]["restrict_sr"] == ""
+            ):
 
                 if "subreddit" in attributes:
                     mode["subreddit"] = attributes["subreddit"]
@@ -164,7 +174,10 @@ def LinkDesigner(link):
             mode["sort"] = "relevance"
 
         if "include_over_18" in attributes["search"]:
-            if attributes["search"]["include_over_18"] == 1 or attributes["search"]["include_over_18"] == "on":
+            if (
+                attributes["search"]["include_over_18"] == 1
+                or attributes["search"]["include_over_18"] == "on"
+            ):
                 mode["nsfw"] = True
             else:
                 mode["nsfw"] = False

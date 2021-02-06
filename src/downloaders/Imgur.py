@@ -5,7 +5,8 @@ import requests
 
 from src.downloaders.Direct import Direct
 from src.downloaders.downloaderUtils import getFile
-from src.errors import (AlbumNotDownloadedCompletely, ExtensionError, FileAlreadyExistsError, ImageNotFound,
+from src.errors import (AlbumNotDownloadedCompletely, ExtensionError,
+                        FileAlreadyExistsError, ImageNotFound,
                         NotADownloadableLinkError, TypeInSkip)
 from src.utils import GLOBAL, nameCorrector
 from src.utils import printToFile as print
@@ -16,11 +17,11 @@ class Imgur:
     imgur_image_domain = "https://i.imgur.com/"
 
     def __init__(self, directory, post):
-        link = post['CONTENTURL']
+        link = post["CONTENTURL"]
 
         if link.endswith(".gifv"):
             link = link.replace(".gifv", ".mp4")
-            Direct(directory, {**post, 'CONTENTURL': link})
+            Direct(directory, {**post, "CONTENTURL": link})
             return None
 
         self.raw_data = self.getData(link)
@@ -37,7 +38,7 @@ class Imgur:
             self.download(self.raw_data)
 
     def downloadAlbum(self, images):
-        folder_name = GLOBAL.config['filename'].format(**self.post)
+        folder_name = GLOBAL.config["filename"].format(**self.post)
         folder_dir = self.directory / folder_name
 
         images_length = images["count"]
@@ -48,23 +49,34 @@ class Imgur:
             if not os.path.exists(folder_dir):
                 os.makedirs(folder_dir)
         except FileNotFoundError:
-            folder_dir = self.directory / self.post['POSTID']
+            folder_dir = self.directory / self.post["POSTID"]
             os.makedirs(folder_dir)
 
         print(folder_name)
 
         for i in range(images_length):
             extension = self.validateExtension(images["images"][i]["ext"])
-            image_url = self.imgur_image_domain + images["images"][i]["hash"] + extension
-            filename = "_".join([str(i + 1),
-                                 nameCorrector(images["images"][i]['title']),
-                                 images["images"][i]['hash']]) + extension
-            short_filename = str(i + 1) + "_" + images["images"][i]['hash']
+            image_url = (
+                self.imgur_image_domain +
+                images["images"][i]["hash"] + extension
+            )
+            filename = (
+                "_".join(
+                    [
+                        str(i + 1),
+                        nameCorrector(images["images"][i]["title"]),
+                        images["images"][i]["hash"],
+                    ]
+                )
+                + extension
+            )
+            short_filename = str(i + 1) + "_" + images["images"][i]["hash"]
 
             print("\n  ({}/{})".format(i + 1, images_length))
 
             try:
-                getFile(filename, short_filename, folder_dir, image_url, indent=2)
+                getFile(filename, short_filename,
+                        folder_dir, image_url, indent=2)
                 how_many_downloaded += 1
                 print()
 
@@ -81,8 +93,8 @@ class Imgur:
                 print(
                     "  "
                     + "{class_name}: {info}\nSee CONSOLE_LOG.txt for more information".format(
-                        class_name=exception.__class__.__name__,
-                        info=str(exception)
+                        class_name=exception.__class__.__name__, info=str(
+                            exception)
                     )
                     + "\n"
                 )
@@ -91,14 +103,15 @@ class Imgur:
         if duplicates == images_length:
             raise FileAlreadyExistsError
         elif how_many_downloaded + duplicates < images_length:
-            raise AlbumNotDownloadedCompletely("Album Not Downloaded Completely")
+            raise AlbumNotDownloadedCompletely(
+                "Album Not Downloaded Completely")
 
     def download(self, image):
         extension = self.validateExtension(image["ext"])
         image_url = self.imgur_image_domain + image["hash"] + extension
 
-        filename = GLOBAL.config['filename'].format(**self.post) + extension
-        short_filename = self.post['POSTID'] + extension
+        filename = GLOBAL.config["filename"].format(**self.post) + extension
+        short_filename = self.post["POSTID"] + extension
 
         getFile(filename, short_filename, self.directory, image_url)
 
@@ -111,7 +124,8 @@ class Imgur:
         cookies = {"over18": "1", "postpagebeta": "0"}
         res = requests.get(link, cookies=cookies)
         if res.status_code != 200:
-            raise ImageNotFound(f"Server responded with {res.status_code} to {link}")
+            raise ImageNotFound(
+                f"Server responded with {res.status_code} to {link}")
         page_source = requests.get(link, cookies=cookies).text
 
         starting_string = "image               : "
@@ -119,18 +133,20 @@ class Imgur:
 
         starting_string_lenght = len(starting_string)
         try:
-            start_index = page_source.index(starting_string) + starting_string_lenght
+            start_index = page_source.index(
+                starting_string) + starting_string_lenght
             end_index = page_source.index(ending_string, start_index)
         except ValueError:
-            raise NotADownloadableLinkError(f"Could not read the page source on {link}")
+            raise NotADownloadableLinkError(
+                f"Could not read the page source on {link}")
 
         while page_source[end_index] != "}":
             end_index -= 1
         try:
-            data = page_source[start_index:end_index + 2].strip()[:-1]
+            data = page_source[start_index: end_index + 2].strip()[:-1]
         except Exception:
-            page_source[end_index + 1] = '}'
-            data = page_source[start_index:end_index + 3].strip()[:-1]
+            page_source[end_index + 1] = "}"
+            data = page_source[start_index: end_index + 3].strip()[:-1]
 
         return json.loads(data)
 
@@ -142,4 +158,5 @@ class Imgur:
             if extension in string:
                 return extension
         else:
-            raise ExtensionError(f"\"{string}\" is not recognized as a valid extension.")
+            raise ExtensionError(
+                f'"{string}" is not recognized as a valid extension.')

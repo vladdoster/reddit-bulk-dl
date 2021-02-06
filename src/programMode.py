@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
 
-from src.errors import InvalidSortingType, ProgramModeError, RedditorNameError, SearchModeError
+from src.errors import (InvalidSortingType, ProgramModeError,
+                        RedditorNameError, SearchModeError)
 from src.parser import LinkDesigner
 
 
 class ProgramMode:
-
     def __init__(self, arguments):
         self.arguments = arguments
 
@@ -23,9 +23,11 @@ class ProgramMode:
 
         if self.arguments.search is not None:
             program_mode["search"] = self.arguments.search
-            if self.arguments.sort == "hot" or \
-                    self.arguments.sort == "controversial" or \
-                    self.arguments.sort == "rising":
+            if (
+                self.arguments.sort == "hot"
+                or self.arguments.sort == "controversial"
+                or self.arguments.sort == "rising"
+            ):
                 self.arguments.sort = "relevance"
 
         if self.arguments.sort is not None:
@@ -42,7 +44,7 @@ class ProgramMode:
             program_mode["time"] = "all"
 
         if self.arguments.link is not None:
-            self.arguments.link = self.arguments.link.strip("\"")
+            self.arguments.link = self.arguments.link.strip('"')
 
             program_mode = LinkDesigner(self.arguments.link)
 
@@ -85,7 +87,11 @@ class ProgramMode:
         print()
         choices_by_index = list(str(x) for x in range(len(choices) + 1))
         for i in range(len(choices)):
-            print("{indent}[{order}] {mode}".format(indent=" " * 4, order=i + 1, mode=choices[i]))
+            print(
+                "{indent}[{order}] {mode}".format(
+                    indent=" " * 4, order=i + 1, mode=choices[i]
+                )
+            )
         print(" " * 4 + "[0] exit\n")
         choice = input("> ")
         while not choice.lower() in choices + choices_by_index + ["exit"]:
@@ -101,7 +107,15 @@ class ProgramMode:
 
     def _promptUser(self):
         print("select program mode:")
-        program_modes = ["search", "subreddit", "multireddit", "submitted", "upvoted", "saved", "log"]
+        program_modes = [
+            "search",
+            "subreddit",
+            "multireddit",
+            "submitted",
+            "upvoted",
+            "saved",
+            "log",
+        ]
         program_mode = self._chooseFrom(program_modes)
 
         if program_mode == "search":
@@ -119,17 +133,23 @@ class ProgramMode:
             self.arguments.time = time_filter
 
         if program_mode == "subreddit":
-            subreddit_input = input("(type frontpage for all subscribed subreddits,\n"
-                                    " use plus to seperate multi subreddits:"
-                                    " pics+funny+me_irl etc.)\n\n"
-                                    "subreddit: ")
+            subreddit_input = input(
+                "(type frontpage for all subscribed subreddits,\n"
+                " use plus to seperate multi subreddits:"
+                " pics+funny+me_irl etc.)\n\n"
+                "subreddit: "
+            )
             self.arguments.subreddit = subreddit_input
 
             if " " in self.arguments.subreddit:
-                self.arguments.subreddit = "+".join(self.arguments.subreddit.split())
+                self.arguments.subreddit = "+".join(
+                    self.arguments.subreddit.split())
 
             # DELETE THE PLUS (+) AT THE END
-            if not subreddit_input.lower() == "frontpage" and self.arguments.subreddit[-1] == "+":
+            if (
+                not subreddit_input.lower() == "frontpage"
+                and self.arguments.subreddit[-1] == "+"
+            ):
                 self.arguments.subreddit = self.arguments.subreddit[:-1]
 
             print("\nselect sort type:")
@@ -211,13 +231,22 @@ class ProgramMode:
 
         search = 1 if self.arguments.search else 0
 
-        modes = ["saved", "subreddit", "submitted", "log", "link", "upvoted", "multireddit"]
+        modes = [
+            "saved",
+            "subreddit",
+            "submitted",
+            "log",
+            "link",
+            "upvoted",
+            "multireddit",
+        ]
 
-        values = {x: 0 if getattr(self.arguments, x) is None or
-                  getattr(self.arguments, x) is False
-                  else 1
-                  for x in modes
-                  }
+        values = {
+            x: 0
+            if getattr(self.arguments, x) is None or getattr(self.arguments, x) is False
+            else 1
+            for x in modes
+        }
 
         if not sum(values[x] for x in values) == 1:
             raise ProgramModeError("Invalid program mode")

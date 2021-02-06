@@ -6,10 +6,10 @@ class Store:
         self.directory = directory
         if self.directory:
             if path.exists(directory):
-                with open(directory, 'r') as f:
+                with open(directory, "r") as f:
                     self.list = f.read().split("\n")
             else:
-                with open(self.directory, 'a'):
+                with open(self.directory, "a"):
                     pass
                 self.list = []
         else:
@@ -21,5 +21,5 @@ class Store:
     def add(self, data):
         self.list.append(data)
         if self.directory:
-            with open(self.directory, 'a') as f:
+            with open(self.directory, "a") as f:
                 f.write("{data}\n".format(data=data))
