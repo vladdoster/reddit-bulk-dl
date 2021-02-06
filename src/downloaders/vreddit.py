@@ -12,31 +12,29 @@ class VReddit:
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        filename = GLOBAL.config['filename'].format(**post) + extension
-        shortFilename = post['POSTID'] + extension
+        filename = GLOBAL.config["filename"].format(**post) + extension
+        shortFilename = post["POSTID"] + extension
 
         try:
-            FNULL = open(os.devnull, 'w')
+            FNULL = open(os.devnull, "w")
             subprocess.call("ffmpeg", stdout=FNULL, stderr=subprocess.STDOUT)
         except BaseException:
-            getFile(filename, shortFilename, directory, post['CONTENTURL'])
+            getFile(filename, shortFilename, directory, post["CONTENTURL"])
             print("FFMPEG library not found, skipping merging video and audio")
         else:
-            videoName = post['POSTID'] + "_video"
-            videoURL = post['CONTENTURL']
-            audioName = post['POSTID'] + "_audio"
-            audioURL = videoURL[:videoURL.rfind('/')] + '/DASH_audio.mp4'
+            videoName = post["POSTID"] + "_video"
+            videoURL = post["CONTENTURL"]
+            audioName = post["POSTID"] + "_audio"
+            audioURL = videoURL[: videoURL.rfind("/")] + "/DASH_audio.mp4"
 
             print(directory, filename, sep="\n")
 
             getFile(videoName, videoName, directory, videoURL, silent=True)
             getFile(audioName, audioName, directory, audioURL, silent=True)
             try:
-                self._mergeAudio(videoName,
-                                 audioName,
-                                 filename,
-                                 shortFilename,
-                                 directory)
+                self._mergeAudio(
+                    videoName, audioName, filename, shortFilename, directory
+                )
             except KeyboardInterrupt:
                 os.remove(directory / filename)
                 os.remove(directory / audioName)
@@ -49,7 +47,7 @@ class VReddit:
         inputVideo = str(directory / video)
         inputAudio = str(directory / audio)
 
-        FNULL = open(os.devnull, 'w')
+        FNULL = open(os.devnull, "w")
         cmd = f"ffmpeg -i {inputAudio} -i {inputVideo} -c:v copy -c:a aac -strict experimental {str(directory / filename)}"
         subprocess.call(cmd.split(), stdout=FNULL, stderr=subprocess.STDOUT)
 

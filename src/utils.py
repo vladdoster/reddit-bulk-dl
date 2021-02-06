@@ -10,15 +10,18 @@ class GLOBAL:
     """Declare global variables"""
 
     RUN_TIME = ""
-    config = {'imgur_client_id': None, 'imgur_client_secret': None}
+    config = {"imgur_client_id": None, "imgur_client_secret": None}
     arguments = None
     directory = None
     defaultConfigDirectory = Path.home() / "Bulk Downloader for Reddit"
     configDirectory = ""
     reddit_client_id = "U-6gk4ZCh3IeNQ"
     reddit_client_secret = "7CZHY6AmKweZME5s50SfDGylaPg"
+
     @staticmethod
-    def downloadedPosts(): return []
+    def downloadedPosts():
+        return []
+
     printVanilla = print
 
     log_stream = None
@@ -32,7 +35,7 @@ def createLogFile(TITLE):
 
     folderDirectory = GLOBAL.directory / "LOG_FILES" / GLOBAL.RUN_TIME
 
-    logFilename = TITLE.upper() + '.json'
+    logFilename = TITLE.upper() + ".json"
 
     if not path.exists(folderDirectory):
         makedirs(folderDirectory)
@@ -52,9 +55,7 @@ def printToFile(*args, noPrint=False, **kwargs):
     folderDirectory = GLOBAL.directory / \
         Path("LOG_FILES") / Path(GLOBAL.RUN_TIME)
 
-    if not noPrint or \
-       GLOBAL.arguments.verbose or \
-       "file" in kwargs:
+    if not noPrint or GLOBAL.arguments.verbose or "file" in kwargs:
 
         print(*args, **kwargs)
 
@@ -86,15 +87,31 @@ def nameCorrector(string, reference=None):
 
     if totalLenght > LIMIT:
         limit = LIMIT - referenceLenght
-        string = string[:limit - 1]
+        string = string[: limit - 1]
 
     string = string.replace(" ", "_")
 
-    if len(string.split('\n')) > 1:
-        string = "".join(string.split('\n'))
+    if len(string.split("\n")) > 1:
+        string = "".join(string.split("\n"))
 
-    BAD_CHARS = ['\\', '/', ':', '*', '?', '"', '<',
-                 '>', '|', '#', '.', '@', '“', '’', '\'', '!']
+    BAD_CHARS = [
+        "\\",
+        "/",
+        ":",
+        "*",
+        "?",
+        '"',
+        "<",
+        ">",
+        "|",
+        "#",
+        ".",
+        "@",
+        "“",
+        "’",
+        "'",
+        "!",
+    ]
     string = "".join([i if i not in BAD_CHARS else "_" for i in string])
 
     return string

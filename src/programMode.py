@@ -1,11 +1,12 @@
-from src.errors import SearchModeError, RedditorNameError, ProgramModeError, InvalidSortingType
-from src.parser import LinkDesigner
-from pathlib import Path
 import sys
+from pathlib import Path
+
+from src.errors import (InvalidSortingType, ProgramModeError,
+                        RedditorNameError, SearchModeError)
+from src.parser import LinkDesigner
 
 
 class ProgramMode:
-
     def __init__(self, arguments):
         self.arguments = arguments
 
@@ -23,9 +24,11 @@ class ProgramMode:
 
         if self.arguments.search is not None:
             programMode["search"] = self.arguments.search
-            if self.arguments.sort == "hot" or \
-                    self.arguments.sort == "controversial" or \
-                    self.arguments.sort == "rising":
+            if (
+                self.arguments.sort == "hot"
+                or self.arguments.sort == "controversial"
+                or self.arguments.sort == "rising"
+            ):
                 self.arguments.sort = "relevance"
 
         if self.arguments.sort is not None:
@@ -43,7 +46,7 @@ class ProgramMode:
 
         if self.arguments.link is not None:
 
-            self.arguments.link = self.arguments.link.strip("\"")
+            self.arguments.link = self.arguments.link.strip('"')
 
             programMode = LinkDesigner(self.arguments.link)
 
@@ -86,9 +89,11 @@ class ProgramMode:
         print()
         choicesByIndex = [str(x) for x in range(len(choices) + 1)]
         for i in range(len(choices)):
-            print("{indent}[{order}] {mode}".format(
-                indent=" " * 4, order=i + 1, mode=choices[i]
-            ))
+            print(
+                "{indent}[{order}] {mode}".format(
+                    indent=" " * 4, order=i + 1, mode=choices[i]
+                )
+            )
         print(" " * 4 + "[0] exit\n")
         choice = input("> ")
         while not choice.lower() in choices + choicesByIndex + ["exit"]:
@@ -105,8 +110,13 @@ class ProgramMode:
     def _promptUser(self):
         print("select program mode:")
         programModes = [
-            "search", "subreddit", "multireddit",
-            "submitted", "upvoted", "saved", "log"
+            "search",
+            "subreddit",
+            "multireddit",
+            "submitted",
+            "upvoted",
+            "saved",
+            "log",
         ]
         programMode = self._chooseFrom(programModes)
 
@@ -115,16 +125,12 @@ class ProgramMode:
             self.arguments.subreddit = input("\nsubreddit: ")
 
             print("\nselect sort type:")
-            sortTypes = [
-                "relevance", "top", "new"
-            ]
+            sortTypes = ["relevance", "top", "new"]
             sortType = self._chooseFrom(sortTypes)
             self.arguments.sort = sortType
 
             print("\nselect time filter:")
-            timeFilters = [
-                "hour", "day", "week", "month", "year", "all"
-            ]
+            timeFilters = ["hour", "day", "week", "month", "year", "all"]
             timeFilter = self._chooseFrom(timeFilters)
             self.arguments.time = timeFilter
 
@@ -134,7 +140,8 @@ class ProgramMode:
                 "(type frontpage for all subscribed subreddits,\n"
                 " use plus to seperate multi subreddits:"
                 " pics+funny+me_irl etc.)\n\n"
-                "subreddit: ")
+                "subreddit: "
+            )
             self.arguments.subreddit = subredditInput
 
             # while not (subredditInput == "" or subredditInput.lower() == "frontpage"):
@@ -146,22 +153,20 @@ class ProgramMode:
                     self.arguments.subreddit.split())
 
             # DELETE THE PLUS (+) AT THE END
-            if not subredditInput.lower() == "frontpage" \
-                    and self.arguments.subreddit[-1] == "+":
+            if (
+                not subredditInput.lower() == "frontpage"
+                and self.arguments.subreddit[-1] == "+"
+            ):
                 self.arguments.subreddit = self.arguments.subreddit[:-1]
 
             print("\nselect sort type:")
-            sortTypes = [
-                "hot", "top", "new", "rising", "controversial"
-            ]
+            sortTypes = ["hot", "top", "new", "rising", "controversial"]
             sortType = self._chooseFrom(sortTypes)
             self.arguments.sort = sortType
 
             if sortType in ["top", "controversial"]:
                 print("\nselect time filter:")
-                timeFilters = [
-                    "hour", "day", "week", "month", "year", "all"
-                ]
+                timeFilters = ["hour", "day", "week", "month", "year", "all"]
                 timeFilter = self._chooseFrom(timeFilters)
                 self.arguments.time = timeFilter
             else:
@@ -172,17 +177,13 @@ class ProgramMode:
             self.arguments.multireddit = input("\nmultireddit: ")
 
             print("\nselect sort type:")
-            sortTypes = [
-                "hot", "top", "new", "rising", "controversial"
-            ]
+            sortTypes = ["hot", "top", "new", "rising", "controversial"]
             sortType = self._chooseFrom(sortTypes)
             self.arguments.sort = sortType
 
             if sortType in ["top", "controversial"]:
                 print("\nselect time filter:")
-                timeFilters = [
-                    "hour", "day", "week", "month", "year", "all"
-                ]
+                timeFilters = ["hour", "day", "week", "month", "year", "all"]
                 timeFilter = self._chooseFrom(timeFilters)
                 self.arguments.time = timeFilter
             else:
@@ -193,17 +194,13 @@ class ProgramMode:
             self.arguments.user = input("\nredditor: ")
 
             print("\nselect sort type:")
-            sortTypes = [
-                "hot", "top", "new", "controversial"
-            ]
+            sortTypes = ["hot", "top", "new", "controversial"]
             sortType = self._chooseFrom(sortTypes)
             self.arguments.sort = sortType
 
             if sortType == "top":
                 print("\nselect time filter:")
-                timeFilters = [
-                    "hour", "day", "week", "month", "year", "all"
-                ]
+                timeFilters = ["hour", "day", "week", "month", "year", "all"]
                 timeFilter = self._chooseFrom(timeFilters)
                 self.arguments.time = timeFilter
             else:
@@ -249,11 +246,12 @@ class ProgramMode:
             "log",
             "link",
             "upvoted",
-            "multireddit"]
+            "multireddit",
+        ]
 
         values = {
-            x: 0 if getattr(self.arguments, x) is None or
-            getattr(self.arguments, x) is False
+            x: 0
+            if getattr(self.arguments, x) is None or getattr(self.arguments, x) is False
             else 1
             for x in modes
         }

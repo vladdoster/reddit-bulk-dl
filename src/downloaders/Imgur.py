@@ -1,12 +1,15 @@
 import json
 import os
+
 import requests
 
-from src.utils import GLOBAL, nameCorrector
-from src.utils import printToFile as print
 from src.downloaders.Direct import Direct
 from src.downloaders.downloaderUtils import getFile
-from src.errors import FileNotFoundError, FileAlreadyExistsError, AlbumNotDownloadedCompletely, ImageNotFound, ExtensionError, NotADownloadableLinkError, TypeInSkip
+from src.errors import (AlbumNotDownloadedCompletely, ExtensionError,
+                        FileAlreadyExistsError, FileNotFoundError,
+                        ImageNotFound, NotADownloadableLinkError, TypeInSkip)
+from src.utils import GLOBAL, nameCorrector
+from src.utils import printToFile as print
 
 
 class Imgur:
@@ -15,11 +18,11 @@ class Imgur:
 
     def __init__(self, directory, post):
 
-        link = post['CONTENTURL']
+        link = post["CONTENTURL"]
 
         if link.endswith(".gifv"):
             link = link.replace(".gifv", ".mp4")
-            Direct(directory, {**post, 'CONTENTURL': link})
+            Direct(directory, {**post, "CONTENTURL": link})
             return None
 
         self.rawData = self.getData(link)
@@ -36,7 +39,7 @@ class Imgur:
             self.download(self.rawData)
 
     def downloadAlbum(self, images):
-        folderName = GLOBAL.config['filename'].format(**self.post)
+        folderName = GLOBAL.config["filename"].format(**self.post)
         folderDir = self.directory / folderName
 
         imagesLenght = images["count"]
@@ -47,7 +50,7 @@ class Imgur:
             if not os.path.exists(folderDir):
                 os.makedirs(folderDir)
         except FileNotFoundError:
-            folderDir = self.directory / self.post['POSTID']
+            folderDir = self.directory / self.post["POSTID"]
             os.makedirs(folderDir)
 
         print(folderName)
@@ -59,10 +62,17 @@ class Imgur:
             imageURL = self.IMGUR_IMAGE_DOMAIN + \
                 images["images"][i]["hash"] + extension
 
-            filename = "_".join([str(i + 1),
-                                 nameCorrector(images["images"][i]['title']),
-                                 images["images"][i]['hash']]) + extension
-            shortFilename = str(i + 1) + "_" + images["images"][i]['hash']
+            filename = (
+                "_".join(
+                    [
+                        str(i + 1),
+                        nameCorrector(images["images"][i]["title"]),
+                        images["images"][i]["hash"],
+                    ]
+                )
+                + extension
+            )
+            shortFilename = str(i + 1) + "_" + images["images"][i]["hash"]
 
             print("\n  ({}/{})".format(i + 1, imagesLenght))
 
@@ -82,26 +92,27 @@ class Imgur:
             except Exception as exception:
                 print("\n  Could not get the file")
                 print(
-                    "  " +
-                    "{class_name}: {info}\nSee CONSOLE_LOG.txt for more information".format(
-                        class_name=exception.__class__.__name__,
-                        info=str(exception)) +
-                    "\n")
+                    "  "
+                    + "{class_name}: {info}\nSee CONSOLE_LOG.txt for more information".format(
+                        class_name=exception.__class__.__name__, info=str(
+                            exception)
+                    )
+                    + "\n"
+                )
                 print(GLOBAL.log_stream.getvalue(), noPrint=True)
 
         if duplicates == imagesLenght:
             raise FileAlreadyExistsError
         if howManyDownloaded + duplicates < imagesLenght:
             raise AlbumNotDownloadedCompletely(
-                "Album Not Downloaded Completely"
-            )
+                "Album Not Downloaded Completely")
 
     def download(self, image):
         extension = self.validateExtension(image["ext"])
         imageURL = self.IMGUR_IMAGE_DOMAIN + image["hash"] + extension
 
-        filename = GLOBAL.config['filename'].format(**self.post) + extension
-        shortFilename = self.post['POSTID'] + extension
+        filename = GLOBAL.config["filename"].format(**self.post) + extension
+        shortFilename = self.post["POSTID"] + extension
 
         getFile(filename, shortFilename, self.directory, imageURL)
 
@@ -134,10 +145,10 @@ class Imgur:
         while pageSource[endIndex] != "}":
             endIndex = endIndex - 1
         try:
-            data = pageSource[startIndex:endIndex + 2].strip()[:-1]
+            data = pageSource[startIndex: endIndex + 2].strip()[:-1]
         except BaseException:
-            pageSource[endIndex + 1] = '}'
-            data = pageSource[startIndex:endIndex + 3].strip()[:-1]
+            pageSource[endIndex + 1] = "}"
+            data = pageSource[startIndex: endIndex + 3].strip()[:-1]
 
         return json.loads(data)
 
@@ -150,4 +161,4 @@ class Imgur:
                 return extension
 
         raise ExtensionError(
-            f"\"{string}\" is not recognized as a valid extension.")
+            f'"{string}" is not recognized as a valid extension.')

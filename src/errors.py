@@ -2,7 +2,6 @@ import sys
 
 
 def full_exc_info(exc_info):
-
     def current_stack(skip=0):
         try:
             1 / 0
@@ -17,8 +16,7 @@ def full_exc_info(exc_info):
         return lst
 
     def extend_traceback(tb, stack):
-
-        class FauxTb():
+        class FauxTb:
             def __init__(self, tb_frame, tb_lineno, tb_next):
                 self.tb_frame = tb_frame
                 self.tb_lineno = tb_lineno

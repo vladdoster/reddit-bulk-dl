@@ -2,11 +2,9 @@ import os
 import urllib.request
 from html.parser import HTMLParser
 
-from src.downloaders.downloaderUtils import getFile
-from src.downloaders.downloaderUtils import getExtension
-
-from src.errors import (AlbumNotDownloadedCompletely,
-                        NotADownloadableLinkError, FileAlreadyExistsError)
+from src.downloaders.downloaderUtils import getExtension, getFile
+from src.errors import (AlbumNotDownloadedCompletely, FileAlreadyExistsError,
+                        NotADownloadableLinkError)
 from src.utils import GLOBAL
 from src.utils import printToFile as print
 
@@ -14,7 +12,7 @@ from src.utils import printToFile as print
 class Erome:
     def __init__(self, directory, post):
         try:
-            IMAGES = self.getLinks(post['CONTENTURL'])
+            IMAGES = self.getLinks(post["CONTENTURL"])
         except urllib.error.HTTPError:
             raise NotADownloadableLinkError("Not a downloadable link")
 
@@ -28,18 +26,18 @@ class Erome:
 
             """Filenames are declared here"""
 
-            filename = GLOBAL.config['filename'].format(
+            filename = GLOBAL.config["filename"].format(
                 **post) + post["EXTENSION"]
-            shortFilename = post['POSTID'] + extension
+            shortFilename = post["POSTID"] + extension
 
             imageURL = IMAGES[0]
-            if 'https://' not in imageURL or 'http://' not in imageURL:
+            if "https://" not in imageURL or "http://" not in imageURL:
                 imageURL = "https://" + imageURL
 
             getFile(filename, shortFilename, directory, imageURL)
 
         else:
-            filename = GLOBAL.config['filename'].format(**post)
+            filename = GLOBAL.config["filename"].format(**post)
 
             print(filename)
 
@@ -49,7 +47,7 @@ class Erome:
                 if not os.path.exists(folderDir):
                     os.makedirs(folderDir)
             except FileNotFoundError:
-                folderDir = directory / post['POSTID']
+                folderDir = directory / post["POSTID"]
                 os.makedirs(folderDir)
 
             for i in range(imagesLenght):
@@ -58,7 +56,7 @@ class Erome:
 
                 filename = str(i + 1) + extension
                 imageURL = IMAGES[i]
-                if 'https://' not in imageURL and 'http://' not in imageURL:
+                if "https://" not in imageURL and "http://" not in imageURL:
                     imageURL = "https://" + imageURL
 
                 print("  ({}/{})".format(i + 1, imagesLenght))
@@ -78,8 +76,8 @@ class Erome:
                     print(
                         "  "
                         + "{class_name}: {info}".format(
-                            class_name=exception.__class__.__name__,
-                            info=str(exception)
+                            class_name=exception.__class__.__name__, info=str(
+                                exception)
                         )
                         + "\n"
                     )
@@ -89,8 +87,7 @@ class Erome:
                 raise FileAlreadyExistsError
             if howManyDownloaded + duplicates < imagesLenght:
                 raise AlbumNotDownloadedCompletely(
-                    "Album Not Downloaded Completely"
-                )
+                    "Album Not Downloaded Completely")
 
     def getLinks(self, url, lineNumber=129):
 
@@ -103,7 +100,7 @@ class Erome:
             def handle_starttag(self, tag, attrs):
                 self.tag = {tag: {attr[0]: attr[1] for attr in attrs}}
 
-        pageSource = (urllib.request.urlopen(url).read().decode().split('\n'))
+        pageSource = urllib.request.urlopen(url).read().decode().split("\n")
 
         """ FIND WHERE ALBUM STARTS IN ORDER NOT TO GET WRONG LINKS"""
         for i in range(len(pageSource)):
@@ -131,6 +128,7 @@ class Erome:
                     content.append(tag["source"]["src"])
 
         return [
-            link for link in content
+            link
+            for link in content
             if link.endswith("_480p.mp4") or not link.endswith(".mp4")
         ]

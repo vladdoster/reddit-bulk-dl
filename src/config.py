@@ -1,11 +1,9 @@
-
-from src.reddit import Reddit
 from src.jsonHelper import JsonFile
+from src.reddit import Reddit
 from src.utils import nameCorrector
 
 
-class Config():
-
+class Config:
     def __init__(self, filename):
         self.filename = filename
         self.file = JsonFile(self.filename)
@@ -18,7 +16,8 @@ class Config():
         return self.file.read()
 
     def setCustomFileName(self):
-        print("""
+        print(
+            """
 IMPORTANT: Do not change the filename structure frequently.
            If you did, the program could not find duplicates and
            would download the already downloaded files again.
@@ -32,29 +31,28 @@ The text in curly braces will be replaced with the corresponding property of an 
 
 For example: {FLAIR}_{SUBREDDIT}_{REDDITOR}
 
-Existing filename template:""", None if "filename" not in self.file.read() else self.file.read()["filename"])
+Existing filename template:""",
+            None
+            if "filename" not in self.file.read()
+            else self.file.read()["filename"],
+        )
 
         filename = nameCorrector(input(">> ").upper())
-        self.file.add({
-            "filename": filename
-        })
+        self.file.add({"filename": filename})
 
     def _readCustomFileName(self):
         content = self.file.read()
 
         if "filename" not in content:
-            self.file.add({
-                "filename": "{REDDITOR}_{TITLE}_{POSTID}"
-            })
+            self.file.add({"filename": "{REDDITOR}_{TITLE}_{POSTID}"})
         content = self.file.read()
 
         if not "{POSTID}" in content["filename"]:
-            self.file.add({
-                "filename": content["filename"] + "_{POSTID}"
-            })
+            self.file.add({"filename": content["filename"] + "_{POSTID}"})
 
     def setCustomFolderPath(self):
-        print("""
+        print(
+            """
 Type a folder structure (generic folder path)
 
 Use slash or DOUBLE backslash to separate folders
@@ -64,41 +62,41 @@ The text in curly braces will be replaced with the corresponding property of an 
 
 For example: {REDDITOR}/{SUBREDDIT}/{FLAIR}
 
-Existing folder structure""", None if "folderpath" not in self.file.read() else self.file.read()["folderpath"])
+Existing folder structure""",
+            None
+            if "folderpath" not in self.file.read()
+            else self.file.read()["folderpath"],
+        )
 
         folderpath = nameCorrector(input(">> ").strip("\\").strip("/").upper())
 
-        self.file.add({
-            "folderpath": folderpath
-        })
+        self.file.add({"folderpath": folderpath})
 
     def _readCustomFolderPath(self, path=None):
         content = self.file.read()
         if "folderpath" not in content:
-            self.file.add({
-                "folderpath": "{SUBREDDIT}"
-            })
+            self.file.add({"folderpath": "{SUBREDDIT}"})
 
     def setDefaultOptions(self):
-        print("""
+        print(
+            """
 Type options to be used everytime script runs
 
 For example: --no-dupes --quit --limit 100 --skip youtube.com
 
-Existing default options:""", None if "options" not in self.file.read() else self.file.read()["options"])
+Existing default options:""",
+            None if "options" not in self.file.read() else self.file.read()[
+                "options"],
+        )
 
         options = input(">> ").strip("")
 
-        self.file.add({
-            "options": options
-        })
+        self.file.add({"options": options})
 
     def _readDefaultOptions(self, path=None):
         content = self.file.read()
         if "options" not in content:
-            self.file.add({
-                "options": ""
-            })
+            self.file.add({"options": ""})
 
     def _validateCredentials(self):
         """Read credentials from config.json file"""
@@ -106,9 +104,7 @@ Existing default options:""", None if "options" not in self.file.read() else sel
         try:
             content = self.file.read()["credentials"]
         except BaseException:
-            self.file.add({
-                "credentials": {}
-            })
+            self.file.add({"credentials": {}})
             content = self.file.read()["credentials"]
 
         if "reddit" in content and len(content["reddit"]) != 0:
@@ -119,12 +115,16 @@ Existing default options:""", None if "options" not in self.file.read() else sel
         print()
 
     def setDefaultDirectory(self):
-        print("""Set a default directory to use in case no directory is given
+        print(
+            """Set a default directory to use in case no directory is given
 Leave blank to reset it. You can use {time} in foler names to use to timestamp it
 For example: D:/archive/BDFR_{time}
-""")
-        print("Current default directory:", self.file.read()[
-              "default_directory"] if "default_directory" in self.file.read() else "")
-        self.file.add({
-            "default_directory": input(">> ")
-        })
+"""
+        )
+        print(
+            "Current default directory:",
+            self.file.read()["default_directory"]
+            if "default_directory" in self.file.read()
+            else "",
+        )
+        self.file.add({"default_directory": input(">> ")})
