@@ -1,18 +1,11 @@
+# Reddit Bulk Downloader
 
-## 📢 Looking for collaborators
-I am aware that the issues stacking rapidly. However, I am really struggling to find the time to work on the project. So, I am looking for collaborators for the project. If you are willing to be a part of this project, email me at parlakciali[at]gmail[dot]com.
+Downloads Reddit media
   
-Also, feel free to send me your merge request! I am planning on setting up continuous delivery flow with GitHub Actions so that each contribution to the project will create a new release. 
-
-# 📥 Bulk Downloader for Reddit
-
-Downloads reddit posts. Made by [u/aliparlakci](https://reddit.com/u/aliparlakci)
-  
-Please give feedback *(errors, feature requests, etc.)* on the [Issues](https://github.com/aliparlakci/bulk-downloader-for-reddit/issues) page. I will try to resolve them ASAP.
 
 ## [Download the latest release here](https://github.com/aliparlakci/bulk-downloader-for-reddit/releases/latest)
 
-## 🚀 How to use
+## Usage
 If you run **Windows**, after you extract the zip file, double-click on the *bulk-downloader-for-reddit.exe*. The program will guide you through. Also, take a look at the [Setting up the program](#🔨-setting-up-the-program) section. **However**, Bulk Dowloader for Reddit has a plenty of features which can only be activated via command line arguments. See [Options](#⚙-Options) for it.
 
 Unfortunately, there is no binary for **MacOS** or **Linux**. If you are a MacOS or Linux user, you must use the program from the source code. See the [Interpret from source code](docs/INTERPRET_FROM_SOURCE.md) page.
@@ -38,7 +31,7 @@ Install it through a package manager such as **Chocolatey** in Windows, **apt** 
 - **in Linux**: Type **`sudo apt install ffmpeg`** in Terminal.
 - **in MacOS**: After you **[install Homebrew](https://brew.sh/)**, type **`brew install ffmpeg`** in Terminal
 
-OR, [Download ffmpeg](https://www.ffmpeg.org/download.html) manually on your system and [add the bin folder in the downloaded folder's directory to `PATH` of your system.](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/) However, package manager option is suggested.
+OR, [Download ffmpeg](https://www.ffmpeg.org/download.html) manually on your system and [add the bin folder in the downloaded folder's dir to `PATH` of your system.](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/) However, package manager option is suggested.
 
 ## 🐋 Docker
 There is also a complete ready to go Docker integration. Install **Docker** and **docker-compose**. Then run the following command from the repository root:
@@ -93,7 +86,7 @@ Example usage: **`--link "https://www.reddit.com/r/funny/comments/25blmh/"`**
 ## **`--log`**
 Program saves the found posts into POSTS.json file and the failed posts to FAILED.json file in LOG_FILES folder. You can use those files to redownload the posts inside them.  
   
-Uses a .json file to redownload posts from. Takes single directory to a .json file as a parameter.
+Uses a .json file to redownload posts from. Takes single dir to a .json file as a parameter.
 
 Example usage: **`--log D:\pics\LOG_FILES\FAILED.json`**
 
@@ -132,43 +125,43 @@ Automatically quits the application after it finishes. Otherwise, it will wait f
 
 Example usage: **`--quit`**
   
-## **`--directory`**
-Takes a directory which the posts should be downloaded to. Overrides the given default directory. Use `..\` to imply upper level and `.\` to imply the current level.
+## **`--dir`**
+Takes a dir which the posts should be downloaded to. Overrides the given default dir. Use `..\` to imply upper level and `.\` to imply the current level.
 
-Example usage: **`--directory D:\bdfr\`**  
-Example usage: **`--directory ..\images\`**  
+Example usage: **`--dir D:\bdfr\`**  
+Example usage: **`--dir ..\images\`**  
 Example usage: **`-d ..\images\`**  
 Example usage: **`-d .\`**  
   
-## **`--set-filename`**
-Starts the program to set a filename template to use for downloading posts. **Does not take any parameter.**
+## **`--set-f_name`**
+Starts the program to set a f_name template to use for downloading posts. **Does not take any parameter.**
   
-When the programs starts, you will be prompted to type a filename template. Use `SUBREDDIT`, `REDDITOR`, `POSTID`, `TITLE`, `UPVOTES`, `FLAIR`, `DATE` in curly brakets `{ }` to refer to the corrosponding property of a post.
+When the programs starts, you will be prompted to type a f_name template. Use `SUBREDDIT`, `REDDITOR`, `POSTID`, `TITLE`, `UPVOTES`, `FLAIR`, `DATE` in curly brakets `{ }` to refer to the corrosponding property of a post.
 
-❗ Do NOT change the filename structure frequently. If you did, the program could not find duplicates and would download the already downloaded files again. This would not create any duplicates in the directory but the program would not be as snappy as it should be.
+❗ Do NOT change the f_name structure frequently. If you did, the program could not find duplicates and would download the already downloaded files again. This would not create any duplicates in the dir but the program would not be as snappy as it should be.
   
-The default filename template is **`{REDDITOR}_{TITLE}_{POSTID}`**
+The default f_name template is **`{REDDITOR}_{TITLE}_{POSTID}`**
 
-Example usage: **`--set-filename`**
+Example usage: **`--set-f_name`**
   
 ## **`--set-folderpath`**
 Starts the program to set a folder structure  to use for downloading posts. **Does not take any parameter.**
   
-When the programs starts, you will be prompted to type a filename template. Use `SUBREDDIT`, `REDDITOR`, `POSTID`, `TITLE`, `UPVOTES`, `FLAIR`, `DATE` in curly brakets `{ }` to refer to the corrosponding property of a post. Do not put slashes `/` or backslashes `\` at either ends. For instance, **`{REDDITOR}/{SUBREDDIT}/{FLAIR}`**
+When the programs starts, you will be prompted to type a f_name template. Use `SUBREDDIT`, `REDDITOR`, `POSTID`, `TITLE`, `UPVOTES`, `FLAIR`, `DATE` in curly brakets `{ }` to refer to the corrosponding property of a post. Do not put slashes `/` or backslashes `\` at either ends. For instance, **`{REDDITOR}/{SUBREDDIT}/{FLAIR}`**
   
-The default filename template is **`{SUBREDDIT}`**
+The default f_name template is **`{SUBREDDIT}`**
 
 Example usage: **`--set-folderpath`**
   
-## **`--set-default-directory`**
-Starts the program to set a default directory to use in case no directory is given. **Does not take any parameter.**
+## **`--set-default-dir`**
+Starts the program to set a default dir to use in case no dir is given. **Does not take any parameter.**
   
-When the programs starts, you will be prompted to type a default directory. You can use {time} in foler names to use to timestamp it. For instance, **`D:\bdfr\posts_{time}`**
+When the programs starts, you will be prompted to type a default dir. You can use {time} in foler names to use to timestamp it. For instance, **`D:\bdfr\posts_{time}`**
 
-Example usage: **`--set-default-directory`**
+Example usage: **`--set-default-dir`**
   
 ## **`--use-local-config`**
-Sets the program to use config.json file in the current directory. Creates it if it does not exists. Useful for having different configurations. **Does not take any parameter.**
+Sets the program to use config.json file in the current dir. Creates it if it does not exists. Useful for having different configurations. **Does not take any parameter.**
   
 Example usage: **`--use-local-config`**
   
@@ -183,7 +176,7 @@ Quits the program without downloading the posts. Does not take any parameter
 Example usage: **`--no-download`**
   
 ## **`--downloaded-posts`**
-Takes a file directory as a parameter and skips the posts if it matches with the post IDs inside the file. It also saves the newly downloaded posts to the given file.
+Takes a file dir as a parameter and skips the posts if it matches with the post IDs inside the file. It also saves the newly downloaded posts to the given file.
 
 Example usage: **`--downloaded-posts D:\bdfr\ALL_POSTS.txt`**
   
@@ -196,9 +189,9 @@ Example usage: **`--downloaded-posts D:\bdfr\ALL_POSTS.txt`**
 - Copy the *config.json* file inside the Bulk Downloader for Reddit folder and paste it **next to** the file that you run the program.
 
 ### How can I change my credentials?
-- All of the user data is held in **config.json** file which is in a folder named "Bulk Downloader for Reddit" in your **Home** directory. You can edit them, there.  
+- All of the user data is held in **config.json** file which is in a folder named "Bulk Downloader for Reddit" in your **Home** dir. You can edit them, there.  
 
-  Also if you already have a config.json file, you can paste it **next to** the script and override the one on your Home directory. 
+  Also if you already have a config.json file, you can paste it **next to** the script and override the one on your Home dir. 
 
 ### What do the dots resemble when getting posts?
 - Each dot means that 100 posts are scanned.

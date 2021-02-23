@@ -21,7 +21,7 @@ Enter these lines to the terminal window until it prints out the a version start
 Once it does, your keyword is without the `--version` part. 
 
 ## 📦 Installing dependencies
-Enter the line below to terminal window when you are in the directory where script.py is, use your keyword instead of `python`:
+Enter the line below to terminal window when you are in the dir where script.py is, use your keyword instead of `python`:
 ```console
 python -m pip install -r requirements.txt
 ```

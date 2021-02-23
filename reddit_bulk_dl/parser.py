@@ -1,17 +1,18 @@
 from pprint import pprint
 
 try:
-    from src.errors import InvalidRedditLink
+    from errors import InvalidRedditLink
 except ModuleNotFoundError:
     from errors import InvalidRedditLink
 
-def QueryParser(PassedQueries,index):
+
+def QueryParser(PassedQueries, index):
     ExtractedQueries = {}
 
     QuestionMarkIndex = PassedQueries.index("?")
     Header = PassedQueries[:QuestionMarkIndex]
     ExtractedQueries["HEADER"] = Header
-    Queries = PassedQueries[QuestionMarkIndex+1:]
+    Queries = PassedQueries[QuestionMarkIndex + 1 :]
 
     ParsedQueries = Queries.split("&")
 
@@ -20,9 +21,10 @@ def QueryParser(PassedQueries,index):
         ExtractedQueries[Query[0]] = Query[1]
 
     if ExtractedQueries["HEADER"] == "search":
-        ExtractedQueries["q"] = ExtractedQueries["q"].replace("%20"," ")
+        ExtractedQueries["q"] = ExtractedQueries["q"].replace("%20", " ")
 
     return ExtractedQueries
+
 
 def LinkParser(LINK):
     RESULT = {}
@@ -37,9 +39,9 @@ def LinkParser(LINK):
         SplittedLink = SplittedLink[2:]
 
     try:
-        if (SplittedLink[-2].endswith("reddit.com") and \
-            SplittedLink[-1] == "") or \
-           SplittedLink[-1].endswith("reddit.com"):
+        if (
+            SplittedLink[-2].endswith("reddit.com") and SplittedLink[-1] == ""
+        ) or SplittedLink[-1].endswith("reddit.com"):
 
             RESULT["sort"] = "best"
             return RESULT
@@ -53,16 +55,18 @@ def LinkParser(LINK):
 
     if SplittedLink[0].endswith("reddit.com"):
         SplittedLink = SplittedLink[1:]
-    
+
     if "comments" in SplittedLink:
-        RESULT = {"post":LINK}
+        RESULT = {"post": LINK}
         return RESULT
-    
-    elif "me" in SplittedLink or \
-         "u" in SplittedLink or \
-         "user" in SplittedLink or \
-         "r" in SplittedLink or \
-         "m" in SplittedLink:
+
+    elif (
+        "me" in SplittedLink
+        or "u" in SplittedLink
+        or "user" in SplittedLink
+        or "r" in SplittedLink
+        or "m" in SplittedLink
+    ):
 
         if "r" in SplittedLink:
             RESULT["subreddit"] = SplittedLink[SplittedLink.index("r") + 1]
@@ -70,47 +74,43 @@ def LinkParser(LINK):
         elif "m" in SplittedLink:
             RESULT["multireddit"] = SplittedLink[SplittedLink.index("m") + 1]
             RESULT["user"] = SplittedLink[SplittedLink.index("m") - 1]
-        
+
         else:
             for index in range(len(SplittedLink)):
-                if SplittedLink[index] == "u" or \
-                   SplittedLink[index] == "user":
+                if SplittedLink[index] == "u" or SplittedLink[index] == "user":
 
-                    RESULT["user"] = SplittedLink[index+1]
+                    RESULT["user"] = SplittedLink[index + 1]
 
                 elif SplittedLink[index] == "me":
                     RESULT["user"] = "me"
 
-
     for index in range(len(SplittedLink)):
-        if SplittedLink[index] in [
-            "hot","top","new","controversial","rising"
-            ]:
+        if SplittedLink[index] in ["hot", "top", "new", "controversial", "rising"]:
 
             RESULT["sort"] = SplittedLink[index]
 
             if index == 0:
                 RESULT["subreddit"] = "frontpage"
-        
-        elif SplittedLink[index] in ["submitted","saved","posts","upvoted"]:
-            if SplittedLink[index] == "submitted" or \
-               SplittedLink[index] == "posts":
+
+        elif SplittedLink[index] in ["submitted", "saved", "posts", "upvoted"]:
+            if SplittedLink[index] == "submitted" or SplittedLink[index] == "posts":
                 RESULT["submitted"] = {}
 
             elif SplittedLink[index] == "saved":
                 RESULT["saved"] = True
-            
+
             elif SplittedLink[index] == "upvoted":
                 RESULT["upvoted"] = True
 
         elif "?" in SplittedLink[index]:
-            ParsedQuery = QueryParser(SplittedLink[index],index)
+            ParsedQuery = QueryParser(SplittedLink[index], index)
             if ParsedQuery["HEADER"] == "search":
                 del ParsedQuery["HEADER"]
                 RESULT["search"] = ParsedQuery
 
-            elif ParsedQuery["HEADER"] == "submitted" or \
-                 ParsedQuery["HEADER"] == "posts":
+            elif (
+                ParsedQuery["HEADER"] == "submitted" or ParsedQuery["HEADER"] == "posts"
+            ):
                 del ParsedQuery["HEADER"]
                 RESULT["submitted"] = ParsedQuery
 
@@ -118,14 +118,19 @@ def LinkParser(LINK):
                 del ParsedQuery["HEADER"]
                 RESULT["queries"] = ParsedQuery
 
-    if not ("upvoted" in RESULT or \
-            "saved" in RESULT or \
-            "submitted" in RESULT or \
-            "multireddit" in RESULT) and \
-       "user" in RESULT:
+    if (
+        not (
+            "upvoted" in RESULT
+            or "saved" in RESULT
+            or "submitted" in RESULT
+            or "multireddit" in RESULT
+        )
+        and "user" in RESULT
+    ):
         RESULT["submitted"] = {}
 
     return RESULT
+
 
 def LinkDesigner(LINK):
 
@@ -142,10 +147,12 @@ def LinkDesigner(LINK):
         MODE["search"] = attributes["search"]["q"]
 
         if "restrict_sr" in attributes["search"]:
-            
-            if not (attributes["search"]["restrict_sr"] == 0 or \
-                    attributes["search"]["restrict_sr"] == "off" or \
-                    attributes["search"]["restrict_sr"] == ""):
+
+            if not (
+                attributes["search"]["restrict_sr"] == 0
+                or attributes["search"]["restrict_sr"] == "off"
+                or attributes["search"]["restrict_sr"] == ""
+            ):
 
                 if "subreddit" in attributes:
                     MODE["subreddit"] = attributes["subreddit"]
@@ -166,18 +173,19 @@ def LinkDesigner(LINK):
             MODE["sort"] = attributes["search"]["sort"]
         else:
             MODE["sort"] = "relevance"
-        
+
         if "include_over_18" in attributes["search"]:
-            if attributes["search"]["include_over_18"] == 1 or \
-               attributes["search"]["include_over_18"] == "on":
+            if (
+                attributes["search"]["include_over_18"] == 1
+                or attributes["search"]["include_over_18"] == "on"
+            ):
                 MODE["nsfw"] = True
             else:
                 MODE["nsfw"] = False
 
     else:
         if "queries" in attributes:
-            if not ("submitted" in attributes or \
-                    "posts" in attributes):
+            if not ("submitted" in attributes or "posts" in attributes):
 
                 if "t" in attributes["queries"]:
                     MODE["time"] = attributes["queries"]["t"]
@@ -195,7 +203,7 @@ def LinkDesigner(LINK):
                     MODE["sort"] = "new"
         else:
             MODE["time"] = "day"
-               
+
     if "subreddit" in attributes and not "search" in attributes:
         MODE["subreddit"] = attributes["subreddit"]
 
@@ -221,7 +229,7 @@ def LinkDesigner(LINK):
 
         elif "upvoted" in attributes:
             MODE["upvoted"] = True
-        
+
         elif "multireddit" in attributes:
             MODE["multireddit"] = attributes["multireddit"]
 
@@ -231,8 +239,9 @@ def LinkDesigner(LINK):
         pass
     else:
         MODE["sort"] = "hot"
- 
+
     return MODE
+
 
 if __name__ == "__main__":
     while True:
