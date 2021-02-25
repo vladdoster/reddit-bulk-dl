@@ -221,6 +221,8 @@ def extractDetails(posts, SINGLE_POST=False):
                            "%Y-%m-%d_%H-%M",
                            time.localtime(submission.created_utc)
                        ))}
+            if 'gallery' in submission.url:
+                details['CONTENTURL'] = genLinksifGallery(submission.media_metadata)
         except AttributeError:
             pass
 
@@ -236,7 +238,7 @@ def extractDetails(posts, SINGLE_POST=False):
     else:
         try:
             for submission in posts:
-
+                
                 if postCount % 100 == 0:
                     sys.stdout.write("• ")
                     sys.stdout.flush()
@@ -258,6 +260,8 @@ def extractDetails(posts, SINGLE_POST=False):
                                    "%Y-%m-%d_%H-%M",
                                    time.localtime(submission.created_utc)
                                ))}
+                    if 'gallery' in submission.url:
+                        details['CONTENTURL'] = genLinksifGallery(submission.media_metadata)
                 except AttributeError:
                     continue
 
@@ -288,6 +292,9 @@ def extractDetails(posts, SINGLE_POST=False):
 
 def matchWithDownloader(submission):
 
+    if 'gallery' in submission.url:
+        return{'TYPE':'gallery'}
+        
     directLink = extractDirectLink(submission.url)
     if directLink:
         return {'TYPE': 'direct',
@@ -358,3 +365,9 @@ def extractDirectLink(URL):
             return URL
 
     return None
+
+def genLinksifGallery(metadata):
+    galleryImgUrls = list()
+    for key in metadata:
+        galleryImgUrls.append(metadata[key]['s']['u'].split('?')[0].replace('preview','i'))
+    return galleryImgUrls
